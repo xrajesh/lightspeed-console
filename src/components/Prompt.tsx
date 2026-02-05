@@ -575,6 +575,15 @@ const Prompt: React.FC<PromptProps> = ({ scrollIntoView }) => {
               } else if (json.event === 'tool_result') {
                 const { content, id, status } = json.data;
                 dispatch(chatHistoryUpdateTool(chatEntryID, id, { content, status }));
+              } else if (json.event === 'tool_ui') {
+                // Handle UI metadata for tools with interactive UIs
+                const { has_ui, id, ui_content } = json.data;
+                if (has_ui && ui_content) {
+                  dispatch(chatHistoryUpdateTool(chatEntryID, id, { 
+                    has_ui, 
+                    ui_content 
+                  }));
+                }
               } else if (json.event === 'error') {
                 dispatch(
                   chatHistoryUpdateByID(chatEntryID, {

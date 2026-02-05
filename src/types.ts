@@ -31,6 +31,8 @@ export type Tool = {
   content: string;
   name: string;
   status: 'error' | 'success';
+  has_ui?: boolean;
+  ui_content?: string;
 };
 
 type ChatEntryUser = {

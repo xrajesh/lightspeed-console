@@ -32,7 +32,7 @@ const ToolModal: React.FC = () => {
   if (!tool) {
     return null;
   }
-  const { args, content, name, status } = tool.toJS();
+  const { args, content, name, status, has_ui, ui_content } = tool.toJS();
 
   const argsFormatted = Object.entries(args)
     .map(([key, value]) => `${key}=${value}`)
@@ -48,7 +48,7 @@ const ToolModal: React.FC = () => {
           <Icon status={status === 'error' ? 'danger' : 'info'}>
             <InfoCircleIcon />
           </Icon>{' '}
-          {t('Tool output')}
+          {has_ui ? t('Tool interactive UI') : t('Tool output')}
         </>
       }
     >
@@ -76,7 +76,41 @@ const ToolModal: React.FC = () => {
           </Trans>
         )}
       </p>
-      {content ? (
+      {has_ui && ui_content ? (
+        // Display interactive UI in iframe
+        <>
+          <iframe
+            srcDoc={ui_content}
+            style={{
+              width: '100%',
+              height: '500px',
+              border: '1px solid var(--pf-t--global--border--color--default)',
+              borderRadius: 'var(--pf-t--global--border--radius--small)',
+            }}
+            title={`${name} UI`}
+          />
+          {/* Also show raw content as fallback */}
+          {content && (
+            <details style={{ marginTop: 'var(--pf-t--global--spacer--md)' }}>
+              <summary>{t('Show raw output')}</summary>
+              <CodeBlock
+                actions={
+                  <>
+                    <CodeBlockAction />
+                    <CodeBlockAction>
+                      <CopyAction value={content} />
+                    </CodeBlockAction>
+                  </>
+                }
+                className="ols-plugin__code-block ols-plugin__code-block--attachment"
+              >
+                <CodeBlockCode className="ols-plugin__code-block-code">{content}</CodeBlockCode>
+              </CodeBlock>
+            </details>
+          )}
+        </>
+      ) : content ? (
+        // Display plain text output
         <CodeBlock
           actions={
             <>
